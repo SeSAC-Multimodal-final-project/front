@@ -1,17 +1,44 @@
-import { Check } from "lucide-react"
-//import { Helmet } from 'react-helmet';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Check } from "lucide-react";
 
 export default function SignUp0() {
+  const navigate = useNavigate();
+
+  // ▼ 입력값을 useState로 관리
+  const [user_id, setUser_id] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPw, setConfirmPw] = useState("");
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+
+  // ▼ "다음" 버튼 클릭 시
+  const handleNext = (e) => {
+    e.preventDefault();
+
+    // (선택) 비밀번호 일치 여부 등 검증 가능
+    if (password !== confirmPw) {
+      alert("비밀번호가 일치하지 않습니다.");
+      return;
+    }
+
+    // ▼ 다음 페이지로 이동하면서, 입력값을 함께 전달
+    navigate("/signup1", {
+      state: {
+        user_id,
+        password,
+        username,
+        email,
+        phone,
+      },
+    });
+  };
+
   return (
-    
     <div className="min-h-screen bg-white">
-      {/* <Helmet>
-        <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
-        <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
-      </Helmet> */}
-      {/* Registration Form */}
       <main className="container mx-auto px-4 max-w-md py-10">
-        <form>
+        <form onSubmit={handleNext}>
           {/* ID Section */}
           <div className="mb-8">
             <label className="block text-gray-700 mb-2 text-lg">아이디</label>
@@ -19,6 +46,8 @@ export default function SignUp0() {
               <input
                 type="text"
                 placeholder="ID 입력"
+                value={user_id}
+                onChange={(e) => setUser_id(e.target.value)}
                 className="w-full bg-[#f4f4f4] rounded-md py-3 px-4 text-gray-700 focus:outline-none"
               />
               <div className="absolute right-3 top-1/2 transform -translate-y-1/2 bg-[#4ba6f7] rounded-full p-1">
@@ -34,6 +63,8 @@ export default function SignUp0() {
               <input
                 type="password"
                 placeholder="비밀번호 입력"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="w-full bg-[#f4f4f4] rounded-md py-3 px-4 text-gray-700 focus:outline-none"
               />
               <div className="absolute right-3 top-1/2 transform -translate-y-1/2 bg-[#4ba6f7] rounded-full p-1">
@@ -44,6 +75,8 @@ export default function SignUp0() {
               <input
                 type="password"
                 placeholder="비밀번호 재확인"
+                value={confirmPw}
+                onChange={(e) => setConfirmPw(e.target.value)}
                 className="w-full bg-[#f4f4f4] rounded-md py-3 px-4 text-gray-700 focus:outline-none"
               />
               <div className="absolute right-3 top-1/2 transform -translate-y-1/2 bg-[#4ba6f7] rounded-full p-1">
@@ -51,8 +84,8 @@ export default function SignUp0() {
               </div>
             </div>
             <p className="text-[#8a8a8a] text-xs flex items-center">
-              <span className="inline-block mr-1">ⓘ</span> 비밀번호는 영문, 숫자, 특수문자를 포함하여 8자리 이상이어야
-              합니다.
+              <span className="inline-block mr-1">ⓘ</span> 비밀번호는 영문, 숫자, 특수문자를
+              포함하여 8자리 이상이어야 합니다.
             </p>
           </div>
 
@@ -61,7 +94,9 @@ export default function SignUp0() {
             <label className="block text-gray-700 mb-2 text-lg">사용자 이름</label>
             <input
               type="text"
-              placeholder="ID를 입력해주세요"
+              placeholder="이름 입력"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               className="w-full bg-[#f4f4f4] rounded-md py-3 px-4 text-gray-700 focus:outline-none"
             />
           </div>
@@ -71,17 +106,21 @@ export default function SignUp0() {
             <label className="block text-gray-700 mb-2 text-lg">이메일 주소</label>
             <input
               type="email"
-              placeholder="비밀번 입력 (예:19850101)"
+              placeholder="예: example@gmail.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full bg-[#f4f4f4] rounded-md py-3 px-4 text-gray-700 focus:outline-none"
             />
           </div>
 
           {/* Phone Section */}
           <div className="mb-8">
-            <label className="block text-gray-700 mb-2 text-lg">휴대폰전화번호</label>
+            <label className="block text-gray-700 mb-2 text-lg">휴대폰 전화번호</label>
             <input
               type="tel"
-              placeholder="비밀번 입력 (예:19850101)"
+              placeholder="예:010-0000-0000"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
               className="w-full bg-[#f4f4f4] rounded-md py-3 px-4 text-gray-700 focus:outline-none mb-2"
             />
             <p className="text-[#8a8a8a] text-xs">
@@ -99,6 +138,5 @@ export default function SignUp0() {
         </form>
       </main>
     </div>
-  )
+  );
 }
-

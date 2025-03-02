@@ -1,12 +1,13 @@
-
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import App from './App';
-import './index.css';
-<script src="https://unpkg.com/@tailwindcss/browser@4"></script>
-ReactDOM.render(
-  <React.StrictMode>
+import { UserProvider } from './components/context/UserContext';
+
+const container = document.getElementById('root');
+const root = createRoot(container); // createRoot를 사용하여 렌더링합니다.
+
+root.render(
+  <UserProvider>
     <App />
-  </React.StrictMode>,
-  document.getElementById('root')
+  </UserProvider>
 );

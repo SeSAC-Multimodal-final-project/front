@@ -1,9 +1,10 @@
 import React, {useState } from "react";
-import { useNavigate } from "react-router-dom"; // useNavigate는 react-router-dom에서 가져옵니다
+import { useLocation, useNavigate } from "react-router-dom";
+//import { useNavigate } from "react-router-dom"; // useNavigate는 react-router-dom에서 가져옵니다
 import { RadioGroup, RadioGroupItem } from "../ui/RadioGroup";
 import { Label } from "../ui/Label";
 import { Input } from "../ui/Input";
-import { Button } from "../ui/Button";
+import { Button,  } from "../ui/Button";
 import { Checkbox } from "../ui/Checkbox";
 import axios from 'axios';
 import "../../output.css";
@@ -18,11 +19,18 @@ export default function SignUp1() {
   const [incomeRange, setIncomeRange] = useState("");
   const [personalCharacteristics, setPersonalCharacteristics] = useState([]);
   const [householdCharacteristics, setHouseholdCharacteristics] = useState([]);
-  const navigate = useNavigate ();
+  const navigate = useNavigate();
+  const { state } = useLocation();
+
+    // state에는 SignUp0에서 넘어온 { userId, password, username, email, phone } 등이 들어있음
+  // 여기서 추가 정보(예: area, birthDate 등)도 관리
+  
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
+    // SignUp0 + SignUp1 정보를 합쳐 최종 데이터 구성
     const formData = {
+      ...state,   // user_id, password, username, email, phone
       area,
       district,
       birthDate,
@@ -32,18 +40,23 @@ export default function SignUp1() {
       householdCharacteristics
     };
     try {
+      // 백엔드로 전송
       const response = await axios.post('http://localhost:8000/submit', formData);
-      console.log('JSON 응답:', JSON.stringify(response.data, null, 2));
+      console.log("서버 응답:", response.data);
+      alert("회원가입 완료!");
+
+      // 가입 완료 후 메인 페이지로 이동
+      navigate("/signup3");
     } catch (error) {
-      console.error('백엔드로 데이터를 전송하는 동안 오류가 발생했습니다:', error);
+      console.error("회원가입 실패:", error);
+      alert("회원가입에 실패했습니다.");
     }
   };
 
  
-  const handlePreviousClick = () => {
-    navigate('/'); // MainPage로 이동
-  
-  };
+  // const handlePreviousClick = () => {
+  //   navigate('/'); // MainPage로 이동
+  // };
 
   const handleCheckboxChange = (e, setState, state) => {
     const { id, checked } = e.target;
@@ -108,7 +121,12 @@ export default function SignUp1() {
 
       {/* 소득금액 구간 섹션 */}
       <section>
-        <h2 className="text-lg font-medium mb-4">소득금액 구간</h2>
+      <div className="flex items-center gap-4 mb-6">
+          <h2 className="text-lg font-medium">소득금액 구간</h2>
+          <div className="bg-[#4ba6f7] text-white px-4 py-2 rounded-full text-sm">
+            2025년 가구 규모별 기준중위 소득표 보기
+          </div>
+        </div>
         <RadioGroup value={incomeRange} onValueChange={setIncomeRange} className="flex flex-wrap gap-4" name="incomeRange">
           {["0 ~ 50%", "51 ~ 75%", "76 ~ 100%", "101 ~ 200%", "200% 이상"].map((range) => (
             <div key={range} className="flex items-center space-x-2">
@@ -124,7 +142,6 @@ export default function SignUp1() {
           <section className="space-y-4">
             <div className="flex justify-between items-center">
               <h2 className="text-lg font-medium">개인 특성 정보 (중복 선택)</h2>
-              <Button variant="link" className="text-[#4ba6f7]">2025년 가구 규모별 기준중위 소득표 보기</Button>
             </div>
             <div className="bg-[#f4f4f4] p-6 rounded-lg grid grid-cols-2 md:grid-cols-3 gap-4">
               {[
@@ -159,7 +176,7 @@ export default function SignUp1() {
           {/* 내비게이션 버튼 */}
           <div className="flex justify-center gap-4 pt-4">
             <Button variant="outline" className="px-8 py-2 border-[#bbbbbb] text-[#8a8a8a] hover:bg-gray-50">이전</Button>
-            <Button type="submit" className="px-8 py-2 bg-[#4ba6f7] hover:bg-[#4ba6f7]/90 text-white" onClick={handlePreviousClick}>회원가입 완료</Button>
+            <Button type="submit" className="px-8 py-2 bg-[#4ba6f7] hover:bg-[#4ba6f7]/90 text-white" >회원가입 완료</Button>
           </div>
         </div>
       </form>

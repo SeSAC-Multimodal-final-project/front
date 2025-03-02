@@ -3,43 +3,43 @@ import { Checkbox } from "../ui/Checkbox";
 import { Input } from "../ui/Input";
 import { Link, useNavigate } from "react-router-dom";
 import '../../output.css';
-
+import { useUser } from "../context/UserContext.js";
 import axios from "axios";
 
 // LoginForm component
 export default function LoginForm() {
   const [stayLoggedIn, setStayLoggedIn] = useState(false);
-  const [userid, setUserid] = useState("");
+  const [user_id, setUser_id] = useState("");
   const [password, setPassword] = useState("");
+
   const navigate = useNavigate();
+  const { setUser } = useUser();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
+  
     try {
-      const response = await axios.post("http://127.0.0.1:8000/token", {
-        userid,
+      const response = await axios.post("http://127.0.0.1:8000/login", {
+        user_id,
         password
       }, {
         headers: {
           "Content-Type": "application/json"
-        }
+        },
+        withCredentials: true, // 쿠키 전송을 위해 추가
       });
-
-      if (response.status === 200) {
-        const data = response.data;
-        // 로그인 성공 시 토큰을 로컬 스토리지에 저장
-        localStorage.setItem("token", data.access_token);
-        console.log("Login successful!", data);
-        // 필요에 따라 다른 페이지로 이동
-        navigate("/MainPage");
-      }
+  
+      // axios는 response.data에 파싱된 데이터를 담고 있습니다.
+      const userData = response.data;
+      // 전역 사용자 컨텍스트 업데이트 (예: setUser)
+      setUser(userData);
+      navigate("/"); // 홈으로 이동
     } catch (error) {
       console.error("Login failed!", error);
-      // 로그인 실패 시 처리
+      alert("로그인 실패!");
     }
   };
-
+  
   return (
     <div className="min-h-screen bg-white">
       <main className="max-w-md mx-auto mt-20 px-4">
@@ -52,8 +52,8 @@ export default function LoginForm() {
             type="text"
             placeholder="아이디"
             className="w-full h-12 bg-[#f4f4f4] border-0 rounded-md"
-            value={userid}
-            onChange={(e) => setUserid(e.target.value)}
+            value={user_id}
+            onChange={(e) => setUser_id(e.target.value)}
           />
           <Input
             type="password"

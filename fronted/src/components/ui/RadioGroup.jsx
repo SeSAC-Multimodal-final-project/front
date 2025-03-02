@@ -28,7 +28,7 @@ export function RadioGroupItem({ value, id, className, name, checked, onChange }
       name={name}  // ✅ name을 props로 전달받아 설정
       value={value}
       id={id}
-      className={className}
+      className={'$className  bg-[#4ba6f7] text-white px-4 py-2 rounded-full text-sm'}
       checked={checked}
       onChange={onChange}
     />
