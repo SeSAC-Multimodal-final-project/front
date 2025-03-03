@@ -37,7 +37,7 @@ def submit_user_data(user: UserDataRequest, db: Session = Depends(get_db)):
     return {"message": "데이터 저장 성공", "id": db_user.user_id}
 
 @router.post("/login")
-def login(login_req: LoginRequest, request: Request, db: Session = Depends(get_db)):
+async def login(login_req: LoginRequest, request: Request, db: Session = Depends(get_db)):
     # 사용자 존재 여부 확인
     user = db.query(UserData).filter(UserData.user_id == login_req.user_id).first()
     if not user:
@@ -56,11 +56,12 @@ def login(login_req: LoginRequest, request: Request, db: Session = Depends(get_d
             "username": user.username,
             "email": user.email,
             "phone": user.phone,
+            "birthDate" : user.birthDate
         }}
 
 
 @router.get("/me")
-def me(request: Request, db: Session = Depends(get_db)):
+async def me(request: Request, db: Session = Depends(get_db)):
     user_id = request.session.get("user_id")
     if not user_id:
         raise HTTPException(status_code=401, detail="로그인 상태가 아닙니다.")
@@ -75,7 +76,7 @@ def me(request: Request, db: Session = Depends(get_db)):
         "phone": user.phone
     }
 
-@router.post("/logout")
-def logout(request: Request):
-    request.session.clear()
-    return {"message": "로그아웃 성공!"}
+@router.get("/logout")
+async def logout(request: Request):
+    request.session.clear()  # 세션 삭제
+    return {"message": "로그아웃 완료"}

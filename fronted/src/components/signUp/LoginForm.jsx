@@ -1,41 +1,24 @@
 import React, { useState } from "react";
-import { Checkbox } from "../ui/Checkbox";
+//import { Checkbox } from "../ui/Checkbox";
 import { Input } from "../ui/Input";
 import { Link, useNavigate } from "react-router-dom";
 import '../../output.css';
-import { useUser } from "../context/UserContext.js";
-import axios from "axios";
-
+//import axios from "axios";
+import useAuthStore from "../context/authStore.js";
 // LoginForm component
 export default function LoginForm() {
-  const [stayLoggedIn, setStayLoggedIn] = useState(false);
+  const { login } = useAuthStore();
   const [user_id, setUser_id] = useState("");
   const [password, setPassword] = useState("");
-
   const navigate = useNavigate();
-  const { setUser } = useUser();
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-  
-    try {
-      const response = await axios.post("http://127.0.0.1:8000/login", {
-        user_id,
-        password
-      }, {
-        headers: {
-          "Content-Type": "application/json"
-        },
-        withCredentials: true, // 쿠키 전송을 위해 추가
-      });
-  
-      // axios는 response.data에 파싱된 데이터를 담고 있습니다.
-      const userData = response.data;
-      // 전역 사용자 컨텍스트 업데이트 (예: setUser)
-      setUser(userData);
-      navigate("/"); // 홈으로 이동
-    } catch (error) {
-      console.error("Login failed!", error);
+  const handleLogin = async (event) => {
+    event.preventDefault()
+    const success = await login(user_id, password);
+    if (success) {
+      alert("로그인 성공!");
+      navigate("/");
+    } else {
       alert("로그인 실패!");
     }
   };
@@ -71,14 +54,6 @@ export default function LoginForm() {
           </Link>
           <div className="flex items-center justify-between pt-2">
             <div className="flex items-center space-x-2">
-              <Checkbox
-                id="stay-logged-in"
-                checked={stayLoggedIn}
-                onChange={(event) => setStayLoggedIn(event.target.checked)}
-              />
-              <label htmlFor="stay-logged-in" className="text-sm text-[#8a8a8a] cursor-pointer">
-                로그인 유지
-              </label>
             </div>
             <Link to="/find-credentials" className="text-sm text-[#8a8a8a]">아이디/비밀번호 찾기</Link>
           </div>

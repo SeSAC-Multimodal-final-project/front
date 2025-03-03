@@ -21,7 +21,16 @@ app.add_middleware(
 # 세션 미들웨어 (운영 시에는 고정된 secret key 사용 권장)
 #secret_key = secrets.token_hex(32)
 secret_key = 'P@ssw0rd'
-app.add_middleware(SessionMiddleware, secret_key=secret_key)
+app.add_middleware(
+    SessionMiddleware,
+    secret_key=secret_key,
+    session_cookie="session_id",
+    max_age=86400,
+    same_site="lax",
+
+)
+
+
 
 # API 라우터 등록
 app.include_router(auth.router)
