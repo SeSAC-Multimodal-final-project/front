@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Check } from "lucide-react";
 
 export default function SignUp0() {
   const navigate = useNavigate();
 
-  // ▼ 입력값을 useState로 관리
+  // 입력값 useState 관리
   const [user_id, setUser_id] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPw, setConfirmPw] = useState("");
@@ -13,17 +13,40 @@ export default function SignUp0() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
 
-  // ▼ "다음" 버튼 클릭 시
+  // 아이디 유효성 검사 함수
+  const isUserIdValid = useMemo(() => {
+    const userIdRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{5,}$/;
+    return userIdRegex.test(user_id);
+  }, [user_id]);
+
+  // 비밀번호 유효성 검사 함수
+  const isPasswordValid = useMemo(() => {
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+    return passwordRegex.test(password);
+  }, [password]);
+
+  // 비밀번호 재확인 일치 여부 검사 함수
+  const isConfirmPwValid = useMemo(() => {
+    return password === confirmPw;
+  }, [password, confirmPw]);
+
+  // 이메일 유효성 검사 함수
+  const isEmailValid = useMemo(() => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }, [email]);
+
+  // "다음" 버튼 클릭 시
   const handleNext = (e) => {
     e.preventDefault();
 
-    // (선택) 비밀번호 일치 여부 등 검증 가능
-    if (password !== confirmPw) {
+    // 비밀번호 일치 여부 검증
+    if (!isConfirmPwValid) {
       alert("비밀번호가 일치하지 않습니다.");
       return;
     }
 
-    // ▼ 다음 페이지로 이동하면서, 입력값을 함께 전달
+    // 다음 페이지로 이동하면서 입력값 전달
     navigate("/signup1", {
       state: {
         user_id,
@@ -42,7 +65,7 @@ export default function SignUp0() {
           {/* ID Section */}
           <div className="mb-8">
             <label className="block text-gray-700 mb-2 text-lg">아이디</label>
-            <div className="relative">
+            <div className="relative mb-3">
               <input
                 type="text"
                 placeholder="ID 입력"
@@ -50,10 +73,15 @@ export default function SignUp0() {
                 onChange={(e) => setUser_id(e.target.value)}
                 className="w-full bg-[#f4f4f4] rounded-md py-3 px-4 text-gray-700 focus:outline-none"
               />
-              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 bg-[#4ba6f7] rounded-full p-1">
-                <Check className="h-4 w-4 text-white" />
-              </div>
+              {isUserIdValid && (
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 bg-[#4ba6f7] rounded-full p-1">
+                  <Check className="h-4 w-4 text-white" />
+                </div>
+              )}
             </div>
+            <p className="text-[#8a8a8a] text-xs">
+              아이디는 영문, 숫자를 포함하여 5자리 이상이어야 합니다.
+            </p>
           </div>
 
           {/* Password Section */}
@@ -67,9 +95,11 @@ export default function SignUp0() {
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full bg-[#f4f4f4] rounded-md py-3 px-4 text-gray-700 focus:outline-none"
               />
-              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 bg-[#4ba6f7] rounded-full p-1">
-                <Check className="h-4 w-4 text-white" />
-              </div>
+              {isPasswordValid && (
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 bg-[#4ba6f7] rounded-full p-1">
+                  <Check className="h-4 w-4 text-white" />
+                </div>
+              )}
             </div>
             <div className="relative mb-2">
               <input
@@ -79,9 +109,11 @@ export default function SignUp0() {
                 onChange={(e) => setConfirmPw(e.target.value)}
                 className="w-full bg-[#f4f4f4] rounded-md py-3 px-4 text-gray-700 focus:outline-none"
               />
-              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 bg-[#4ba6f7] rounded-full p-1">
-                <Check className="h-4 w-4 text-white" />
-              </div>
+              {isConfirmPwValid && isPasswordValid && (
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 bg-[#4ba6f7] rounded-full p-1">
+                  <Check className="h-4 w-4 text-white" />
+                </div>
+              )}
             </div>
             <p className="text-[#8a8a8a] text-xs flex items-center">
               <span className="inline-block mr-1">ⓘ</span> 비밀번호는 영문, 숫자, 특수문자를
@@ -104,13 +136,20 @@ export default function SignUp0() {
           {/* Email Section */}
           <div className="mb-8">
             <label className="block text-gray-700 mb-2 text-lg">이메일 주소</label>
-            <input
-              type="email"
-              placeholder="예: example@gmail.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-[#f4f4f4] rounded-md py-3 px-4 text-gray-700 focus:outline-none"
-            />
+            <div className="relative mb-3">
+              <input
+                type="email"
+                placeholder="예: example@gmail.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full bg-[#f4f4f4] rounded-md py-3 px-4 text-gray-700 focus:outline-none"
+              />
+              {isEmailValid && (
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 bg-[#4ba6f7] rounded-full p-1">
+                  <Check className="h-4 w-4 text-white" />
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Phone Section */}
