@@ -1,17 +1,25 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+from datetime import datetime
 from typing import List, Dict
 
 class ChatMessage(BaseModel):
-    timeStamp: str
+    timestamp: datetime # ISO 8601 형식의 문자열 → datetime 객체로 변환됨
     sender: str
-    text: str
+    message: str
+
+    class Config:
+        from_attributes = True  # pydantic v2에서는 orm_mode 대신 사용
+        populate_by_name = True  # 내부 필드명("text")도 허용됨
+
 
 class ChatSession(BaseModel):
     session_id: str
     messages: List[ChatMessage]
 
-class CreateSessionResponse(BaseModel):
-    session_id: str
+class ChatSessionCreate(BaseModel):
+    user_id: str | None = None
+    session_id: str | None = None
+    header_message: str | None = None
 
 class ChatRequest(BaseModel):
     message: str

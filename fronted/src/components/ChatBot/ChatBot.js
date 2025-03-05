@@ -1,6 +1,12 @@
+// ChatBot.js
+//npm install redux react-redux
+//npm install @reduxjs/toolkit react-redux
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { setSessions } from '../redux/sessionSlice'; // sessionSlice.js의 경로에 맞게 수정
 import './ChatBot.css';
+import useAuthStore from '../context/authStore';
 
 const ChatBot = () => {
     const [chatHistory, setChatHistory] = useState([]);
@@ -9,7 +15,7 @@ const ChatBot = () => {
     const [isChatStarted, setIsChatStarted] = useState(false);
     const [sessionId, setSessionId] = useState(null);
     const navigate = useNavigate();
-
+    const dispatch = useDispatch();
 
     // 예시 질문 목록 (6개)
     const exampleQuestions = [
@@ -21,11 +27,23 @@ const ChatBot = () => {
         '펀딧은 어떤 서비스를 제공하나요?',
     ];
 
-    const createSession = async () => {
+    const user = useAuthStore.getState().user;
+
+    const createSession = async (message) => {
         try {
-            const res = await fetch('http://localhost:8000/sessions', { method: 'POST' });
+            const res = await fetch('http://localhost:8000/sessions', {
+              method: 'POST',
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ user_id: user.user_id, header_message: message }),
+            });
             const data = await res.json();
             setSessionId(data.session_id);
+
+            // 세션 목록 업데이트
+            const sessionsRes = await fetch(`http://localhost:8000/sessions?user_id=${user.user_id}`);
+            const sessionsData = await sessionsRes.json();
+            dispatch(setSessions(sessionsData));
+
             return data.session_id
         } catch (error) {
           console.error("세션 생성 에러:", error);
@@ -38,7 +56,7 @@ const ChatBot = () => {
         let currentSessionId = sessionId;
         // 세션이 없으면 새로 생성한 후, 그 세션 ID를 사용합니다.
         if (!currentSessionId) {
-            currentSessionId = await createSession();
+            currentSessionId = await createSession(message);
         }
         
         try {
@@ -52,11 +70,12 @@ const ChatBot = () => {
             const data = await response.json();
 
             // 현재 시간을 타임스탬프로 기록
-            const timeStamp = new Date().toISOString();
+            const timestamp = new Date().toISOString();
 
             // 사용자와 챗봇 메시지 객체 생성
-            const msg_user = { id:Date.now(), timeStamp, sender: 'user', text: message };
-            const msg_bot = { id:Date.now()+1, timeStamp, sender: 'bot', text: data.response };
+            //id:Date.now(), timeStamp, id:Date.now()+1, timeStamp,
+            const msg_user = { timestamp, sender: 'user', message: message };
+            const msg_bot = { timestamp, sender: 'bot', message: data.response };
 
             // 클라이언트 채팅 기록 업데이트
             setChatHistory(prev => [...prev, msg_user, msg_bot]);
@@ -109,9 +128,9 @@ const ChatBot = () => {
     <div className="chatbot-container">
         {/* 채팅 메시지 영역 */}
         <div className="messages">
-        {chatHistory.map((message) => (
-            <div key={message.id} className={`message ${message.sender}`}>
-                {message.text}
+        {chatHistory.map((message, index) => (
+            <div key={index} className={`message ${message.sender}`}>
+                {message.message}
             </div>
         ))}
             <div ref={messagesEndRef} />

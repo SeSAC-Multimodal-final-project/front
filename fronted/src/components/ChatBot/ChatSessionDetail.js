@@ -16,7 +16,11 @@ const ChatSessionDetail = () => {
       .then((res) => res.json())
       .then((data) => {
         if (data.messages) {
-          setChatHistory(data.messages);
+          // 타임스탬프와 sender에 따라 메시지를 정렬합니다.
+          const sortedMessages = data.messages.sort((a, b) => {
+            return a.timestamp.localeCompare(b.timestamp) || (a.sender === 'user' ? -1 : 1);
+          });
+          setChatHistory(sortedMessages);
         } else {
           console.error("Invalid response format");
         }
@@ -35,10 +39,10 @@ const ChatSessionDetail = () => {
         body: JSON.stringify({ message }),
       });
       const data = await response.json();
-      const timeStamp = new Date().toISOString();
+      const timestamp = new Date().toISOString();
   
-      const msg_user = { timeStamp, sender: 'user', text: message };
-      const msg_bot = { timeStamp, sender: 'bot', text: data.response };
+      const msg_user = { timestamp, sender: 'user', message: message };
+      const msg_bot = { timestamp, sender: 'bot', message: data.response };
   
       // 클라이언트 상태에 메시지 추가
       setChatHistory((prev) => [...prev, msg_user, msg_bot]);
@@ -77,8 +81,8 @@ const ChatSessionDetail = () => {
     <div className="chatbot-container">
       <div className="messages">
         {chatHistory.map((msg, index) => (
-            <div key={msg.id} className={`message ${msg.sender}`}>
-                {msg.text} {/*<em>{msg.timeStamp}</em>*/}
+            <div key={index} className={`message ${msg.sender}`}>
+                {msg.message} {/*<em>{msg.timeStamp}</em>*/}
             </div>
         ))}
         <div ref={messagesEndRef} />

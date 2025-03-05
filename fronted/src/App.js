@@ -11,6 +11,9 @@ import SignUp3 from "./components/signUp/SignUp3";
 import MainPage from "./components/ChatBot/MainPage";
 import MyPage from "./components/mypage/MyPage";
 import useAuthStore from "./components/context/authStore.js";
+//redux
+import { Provider } from 'react-redux';
+import store from './components/redux/store'; // store.js의 경로에 맞게 수정
 import "./App.css";
 
 // 🔒 로그인 필수 페이지 보호 (PrivateRoute)
@@ -27,21 +30,23 @@ function App() {
   }, []);
 
   return (
-    <Router>
-      <Header />
-      <Routes>
-        <Route path="/" element={<MainPage />} />
-        <Route path="chat" element={<PrivateRoute element={<Layout />} />}>
-          <Route index element={<ChatBot />} />
-          <Route path=":sessionId" element={<ChatSessionDetail />} />
-        </Route>
-        <Route path="login" element={<LoginForm />} />
-        <Route path="signup" element={<SignUp0 />} />
-        <Route path="signup1" element={<SignUp1 />} />
-        <Route path="signup3" element={<SignUp3 />} />
-        <Route path="mypage" element={<PrivateRoute element={<MyPage />} />} />
-      </Routes>
-    </Router>
+    <Provider store={store}> {/* Redux Provider로 감싸기 */}
+      <Router>
+        <Header />
+        <Routes>
+          <Route path="/" element={<MainPage />} />
+          <Route path="chat" element={<PrivateRoute element={<Layout />} />}>
+            <Route index element={<ChatBot />} />
+            <Route path=":sessionId" element={<ChatSessionDetail />} />
+          </Route>
+          <Route path="login" element={<LoginForm />} />
+          <Route path="signup" element={<SignUp0 />} />
+          <Route path="signup1" element={<SignUp1 />} />
+          <Route path="signup3" element={<SignUp3 />} />
+          <Route path="mypage" element={<PrivateRoute element={<MyPage />} />} />
+        </Routes>
+      </Router>
+    </Provider>
   );
 }
 

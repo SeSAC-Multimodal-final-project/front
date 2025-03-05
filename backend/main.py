@@ -2,6 +2,11 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 import secrets
+from app.core.db import engine
+from app.models.user import Base # Base에 모든 ORM 모델이 등록되어 있어야 합니다.
+
+# 등록된 테이블이 없으면 생성
+Base.metadata.create_all(engine)
 
 # 라우터 임포트
 from app.api import auth, chat
