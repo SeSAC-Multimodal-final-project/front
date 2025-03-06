@@ -105,9 +105,10 @@ async def list_sessions(user_id: str = Query(..., description="User ID"), db: Se
     return [{"sessionId": s[0], "header_message": s[1]} for s in sessions]
 
 # 챗봇 엔드포인트 (예: POST /chat)
-@router.post("/chat", response_model=ChatResponse)
+@router.post("/model", response_model=ChatResponse)
 async def chat_endpoint(chat: ChatRequest):
 
     gpt_response = request_gpt(chat.message)
+    print(gpt_response)
 
     return ChatResponse(response=gpt_response)

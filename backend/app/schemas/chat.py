@@ -26,3 +26,6 @@ class ChatRequest(BaseModel):
 
 class ChatResponse(BaseModel):
     response: str
+
+class InitMessage(BaseModel):
+    init_message: str | None = None

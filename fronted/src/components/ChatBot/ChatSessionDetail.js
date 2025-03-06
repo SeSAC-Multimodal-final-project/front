@@ -1,7 +1,8 @@
 // ChatSessionDetail.js
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-
+import ReactMarkdown from 'react-markdown';
+import { useSelector } from 'react-redux';
 import './ChatBot.css';
 
 const ChatSessionDetail = () => {
@@ -10,30 +11,42 @@ const ChatSessionDetail = () => {
   const [currentMessage, setCurrentMessage] = useState('');
   const messagesEndRef = useRef(null);
 
+  const message = useSelector(state => state.message);
+
   // 백엔드에서 해당 세션의 채팅 기록을 불러옵니다.
   useEffect(() => {
     fetch(`http://localhost:8000/sessions/${sessionId}`)
       .then((res) => res.json())
       .then((data) => {
-        if (data.messages) {
+        if (data.messages && data.messages.length > 0) {
           // 타임스탬프와 sender에 따라 메시지를 정렬합니다.
+          console.log("메시지 기록 없음");
           const sortedMessages = data.messages.sort((a, b) => {
             return a.timestamp.localeCompare(b.timestamp) || (a.sender === 'user' ? -1 : 1);
           });
+
           setChatHistory(sortedMessages);
-        } else {
-          console.error("Invalid response format");
-        }
+        } 
+        else {
+          if (message) {
+            // 메시지를 처리하는 로직
+            console.log("처리할 메시지:", message);
+            sendMessage(message);
+          }
+          else {
+            console.log("처리할 메시지 없음");
+          }
+        } 
       })
       .catch((err) => console.error(err));
   }, [sessionId]);
-  
+
 
   // 메시지 전송 함수: 백엔드의 /chat 엔드포인트를 호출해 챗봇 응답을 받고,
   // 사용자와 챗봇 메시지를 백엔드에 저장합니다.
   const sendMessage = async (message) => {
     try {
-      const response = await fetch('http://localhost:8000/chat', {
+      const response = await fetch('http://localhost:8000/model', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message }),
@@ -82,7 +95,10 @@ const ChatSessionDetail = () => {
       <div className="messages">
         {chatHistory.map((msg, index) => (
             <div key={index} className={`message ${msg.sender}`}>
-                {msg.message} {/*<em>{msg.timeStamp}</em>*/}
+                {/*메시지를 gpt 출력형식에 맞게 변환*/}
+                <div className="message-container">
+                    <ReactMarkdown>{msg.message}</ReactMarkdown>
+                </div>
             </div>
         ))}
         <div ref={messagesEndRef} />

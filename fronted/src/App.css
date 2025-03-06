@@ -85,14 +85,14 @@
 /* 전체 레이아웃 */
 .layout-container {
   display: flex;
-  height: calc(100vh - 60px); /* 헤더 높이 제외 */
-  width: 100vw;
+  height: calc(100vh - 70px);/* 헤더 높이 제외 */
+  width: 100%;
   margin: 0 auto;
 }
 
 /* 🔹 사이드바 스타일 */
 .sidebar {
-  width: 220px;
+  width: 300px;
   background-color: #f4f4f4;
   border-radius: 10px; /* 모서리 둥글게 */
   padding: 10px;
@@ -102,7 +102,11 @@
   align-items: center;
   transition: width 0.2s ease;  /* 사이드바 기본 위치 */
   transform: translateX(0);
-  position: relative; 
+  position: relative;
+  overflow-y: scroll; /* 사이드바 스크롤 활성화 */
+  max-height: 100vh; /* 전체 화면 높이 제한 */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer and Edge */
 }
 
 /* 사이드바 숨김 상태일 때 */
@@ -136,6 +140,74 @@
   background-size: contain;              /* 요소 안에 맞게 크기 조절 (비율 유지) */
 }
 
+.new-chat-button {
+  position: absolute;
+  display: block;
+  top: 9.2%;
+  width: 240px;
+  height: 70px;
+  text-align: center;
+  align-content: center;
+  padding: 15px;
+  background-color: white;
+  text-decoration: none;
+  color: #4BA6F7;
+  font-size: 16px;
+  font-weight: 400;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.38);
+  border-radius: 15px;
+  margin: 10px auto;
+}
+
+.new-chat-button:hover {
+  background-color: #f0f0f0;
+  color: #007bff;
+}
+
+.session-list-container {
+  position: relative;
+  /* align-self: center; */
+  width: 85%;
+  top: 20%;
+  padding: 0px;
+  background-color: #00ff0400;
+}
+
+.session-list {
+  background-color: #ff2f0000;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.session-item {
+  margin-bottom: 30px;
+  width: 240px;
+  height: 70px;
+  text-align: center;
+  align-content: center;
+  padding: 15px;
+  background-color: white;
+  text-decoration: none;
+  color: #4BA6F7;
+  font-size: 16px;
+  font-weight: 400;
+  transition: all 0.3s ease;
+  display: block;
+  cursor: pointer;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.38);  /* 기본 그림자 */
+  border-radius: 15px;  /* 모서리를 둥글게 */
+}
+
+.session-item:hover {
+  background-color: #f0f0f0;
+  color: #007bff;
+}
+
 
 /* 사이드바가 접혔을 때 버튼 위치 재조정 */ 
  /* .sidebar.collapsed + .sidebar-toggle {
@@ -148,11 +220,11 @@
   justify-content: center;
   align-items: center; */
   flex: 1;
-  padding: 5px;
+  padding: 0px;
   background-color: #8aff0400;
   overflow-y: auto;
-  border-radius: 20px;
-  margin: 10px;
+  border-radius: 0px;
+  margin: 0px;
 }
 
 /* 🔹 카드 리스트 */

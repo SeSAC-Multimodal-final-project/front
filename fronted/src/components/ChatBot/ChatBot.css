@@ -10,7 +10,7 @@
     height: 90vh;
     max-width: 60vw;
     margin: 0 auto;  /* 좌우 자동 마진으로 중앙 배치 */
-    background-color: #f87b7b00;
+    background-color: #c12c2c00;
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     color: #333;
   }
@@ -33,28 +33,29 @@
     max-width: 100%;
     word-wrap: break-word;
     font-size: 1rem;
-    color: #000000;
+    color: #00316B;
   }
   .message.bot {
     background-color: #fff1f100;
     align-self: flex-start;
   }
   .message.user {
-    background-color: #72727293;
+    color: #4BA6F7;
+    background-color: #7272720b;
     align-self: flex-end;
   }
   
   /* 예시 질문 컨테이너 */
   .example-questions {
     position: absolute;
-    top: 68%;
+    top: 75%;
     left: 50%;
     transform: translate(-50%, -50%);
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     grid-template-rows: repeat(3, auto);
-    gap: 15px;
-    padding: 10px;
+    gap: 20px;
+    padding: 15px;
     background-color: #0628e800;
   }
   
@@ -81,8 +82,8 @@
     display: flex;
     padding: 12px;
     border-top: 1px solid #ffffff00;
-    background-color: #5d5d5d00;
-    width: 50%;
+    background-color: #d5282800;
+    width: 70%;
     transition: all 0.2s ease-in-out;
   }
   
@@ -96,7 +97,7 @@
     padding: 12px;
     border-top: 1px solid #ffffff00;
     background-color: #5d5d5d00;
-    width: 50%;
+    width: 70%;
   }
   
   /* 텍스트 입력 필드 */
@@ -104,7 +105,7 @@
     flex: 1;
     padding: 10px;
     font-size: 1rem;
-    border: 1px solid #ffffff00;
+    border: 1px solid #e9717100;
     border-radius: 15px;
     outline: none;
     transition: border-color 0.3s ease;
@@ -141,7 +142,7 @@
     left: 50%;
     transform: translate(-50%, -50%);
     text-align: center;
-    margin: 10px 20px;
+    margin: 0px 0px;
     font-size: 2rem;
     line-height: 1.4;
   }

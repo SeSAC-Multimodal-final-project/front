@@ -25,15 +25,17 @@ const ChatSessionList = () => {
   }, [dispatch, user.user_id]);
 
   return (
-    <div>
+    <div className="session-list-container">
       {/* <h2>Chat Sessions</h2> */}
-      <ul>
+      <ul className="session-list">
         {sessions.map(session => (
-          <li key={session.sessionId}>
-            <Link to={`/chat/${session.sessionId}`}>
-              {session.header_message.substring(0, 20)}
-            </Link>
-          </li>
+          <Link 
+            to={`/chat/${session.sessionId}`} 
+            key={session.sessionId} 
+            className="session-item"
+          >
+            {session.header_message.substring(0, 16)}
+          </Link>
         ))}
       </ul>
     </div>

@@ -1,10 +1,13 @@
 // ChatBot.js
 //npm install redux react-redux
 //npm install @reduxjs/toolkit react-redux
+//npm install react-markdown
+
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { setSessions } from '../redux/sessionSlice'; // sessionSlice.js의 경로에 맞게 수정
+import { setSessions } from '../redux/sessionSlice';
+import { setMessage } from '../redux/messageSlice';
 import './ChatBot.css';
 import useAuthStore from '../context/authStore';
 
@@ -58,55 +61,58 @@ const ChatBot = () => {
         if (!currentSessionId) {
             currentSessionId = await createSession(message);
         }
-        
-        try {
-            const response = await fetch('http://localhost:8000/chat', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ message }),
-            });
-            const data = await response.json();
 
-            // 현재 시간을 타임스탬프로 기록
-            const timestamp = new Date().toISOString();
+        navigate(`/chat/${currentSessionId}`);
 
-            // 사용자와 챗봇 메시지 객체 생성
-            //id:Date.now(), timeStamp, id:Date.now()+1, timeStamp,
-            const msg_user = { timestamp, sender: 'user', message: message };
-            const msg_bot = { timestamp, sender: 'bot', message: data.response };
+        // try {
+        //     const response = await fetch('http://localhost:8000/model', {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //     },
+        //     body: JSON.stringify({ message }),
+        //     });
+        //     const data = await response.json();
 
-            // 클라이언트 채팅 기록 업데이트
-            setChatHistory(prev => [...prev, msg_user, msg_bot]);
+        //     // 현재 시간을 타임스탬프로 기록
+        //     const timestamp = new Date().toISOString();
 
-            //백엔드에 저장
-            await fetch(`http://localhost:8000/sessions/${currentSessionId}/message`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(msg_user),
-            });
+        //     // 사용자와 챗봇 메시지 객체 생성
+        //     //id:Date.now(), timeStamp, id:Date.now()+1, timeStamp,
+        //     const msg_user = { timestamp, sender: 'user', message: message };
+        //     const msg_bot = { timestamp, sender: 'bot', message: data.response };
 
-            await fetch(`http://localhost:8000/sessions/${currentSessionId}/message`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(msg_bot),
-            });
+        //     // 클라이언트 채팅 기록 업데이트
+        //     setChatHistory(prev => [...prev, msg_user, msg_bot]);
 
-            navigate(`/chat/${currentSessionId}`);
+        //     //백엔드에 저장
+        //     await fetch(`http://localhost:8000/sessions/${currentSessionId}/message`, {
+        //       method: 'POST',
+        //       headers: { 'Content-Type': 'application/json' },
+        //       body: JSON.stringify(msg_user),
+        //     });
 
-        } catch (error) {
-            console.error("메시지 전송 중 에러:", error);
-        }
+        //     await fetch(`http://localhost:8000/sessions/${currentSessionId}/message`, {
+        //       method: 'POST',
+        //       headers: { 'Content-Type': 'application/json' },
+        //       body: JSON.stringify(msg_bot),
+        //     });
+
+        //     navigate(`/chat/${currentSessionId}`);
+
+        // } catch (error) {
+        //     console.error("메시지 전송 중 에러:", error);
+        // }
         };
 
     // 메시지 전송 공용 함수
     const handleSend = (text) => {
-    if (!text.trim()) return;
+        if (!text.trim()) return;
 
-    sendMessage(text);
-    setCurrentMessage('');
-    setIsChatStarted(true);
+        dispatch(setMessage(text)); // 메시지를 Redux 상태에 저장
+        sendMessage(text);
+        setCurrentMessage('');
+        setIsChatStarted(true);
     };
 
     // 인풋창에서 "전송" 버튼 클릭
