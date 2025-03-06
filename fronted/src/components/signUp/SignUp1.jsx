@@ -8,6 +8,7 @@ import { Checkbox } from "../ui/Checkbox";
 import axios from 'axios';
 import "../../output.css";
 import { Check } from "lucide-react";
+import incomeTableImage from "C:/Users/r2com/Desktop/pratice/FInal project/front/fronted/src/assets/images/2025yfamilypay.png";
 
 // 나이 계산 유틸리티 함수
 const calculateAge = (birthDate) => {
@@ -44,6 +45,7 @@ export default function SignUp1() {
   const [householdCharacteristics, setHouseholdCharacteristics] = useState([]);
   const navigate = useNavigate();
   const { state } = useLocation();
+  const [showIncomeModal, setShowIncomeModal] = useState(false);
 
   const regions = {
     "서울특별시": ["강남구", "강북구", "강서구", "관악구", "광진구", "구로구", "금천구", "노원구", "도봉구", "동대문구", "동작구", "마포구", "서대문구", "서초구", "성동구", "성북구", "송파구", "양천구", "영등포구", "용산구", "은평구", "종로구", "중구", "중랑구"],
@@ -184,9 +186,13 @@ export default function SignUp1() {
         <section>
           <div className="flex items-center gap-4 mb-6">
             <h2 className="text-lg font-medium">소득금액 구간</h2>
-            <div className="bg-[#4ba6f7] text-white px-4 py-2 rounded-full text-sm">
+            <button
+              type="button"
+              className="bg-[#4ba6f7] text-white px-4 py-2 rounded-full text-sm"
+              onClick={() => setShowIncomeModal(true)}
+            >
               2025년 가구 규모별 기준중위 소득표 보기
-            </div>
+            </button>
           </div>
           <RadioGroup value={incomeRange} onValueChange={setIncomeRange} className="flex flex-wrap gap-4" name="incomeRange">
             {["0 ~ 50%", "51 ~ 75%", "76 ~ 100%", "101 ~ 200%", "200% 이상"].map((range) => (
@@ -245,6 +251,29 @@ export default function SignUp1() {
           <Button type="submit" className="px-8 py-2 bg-[#4ba6f7] hover:bg-[#4ba6f7]/90 text-white">회원가입 완료</Button>
         </div>
       </form>
+      {/* [변경 부분] 4: 모달 추가 (showIncomeModal가 true일 때만 표시) */}
+      {showIncomeModal && (
+        <div
+          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
+          onClick={() => setShowIncomeModal(false)}
+        >
+          <div
+            className="bg-white p-6 rounded-lg max-w-lg w-full"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img
+              src={incomeTableImage}
+              alt="2025년 가구 규모별 기준중위 소득표"
+              className="w-full h-auto"
+            />
+            <div className="mt-4 flex justify-end">
+              <Button variant="outline" onClick={() => setShowIncomeModal(false)}>
+                닫기
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
     );
     }
