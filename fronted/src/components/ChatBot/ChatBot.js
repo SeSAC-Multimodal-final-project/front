@@ -10,6 +10,7 @@ import { setSessions } from '../redux/sessionSlice';
 import { setMessage } from '../redux/messageSlice';
 import './ChatBot.css';
 import useAuthStore from '../context/authStore';
+import { handleMicrophoneClick } from '../utils/microphoneHandler';
 
 const ChatBot = () => {
     const [chatHistory, setChatHistory] = useState([]);
@@ -17,6 +18,7 @@ const ChatBot = () => {
     const messagesEndRef = useRef(null);
     const [isChatStarted, setIsChatStarted] = useState(false);
     const [sessionId, setSessionId] = useState(null);
+    const [isRecording, setIsRecording] = useState(false); // 녹음 상태 추적
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
@@ -123,7 +125,12 @@ const ChatBot = () => {
     // 예시 질문 클릭 -> 메시지 자동 전송
     const handleExampleQuestionClick = (question) => {
         handleSend(question);
+
       };
+
+    const localHandleMicrophoneClick = () => {
+      handleMicrophoneClick(setCurrentMessage, setIsRecording);
+    };
 
     // 새로운 메시지가 추가되면 스크롤을 자동으로 맨 아래로 이동
     useEffect(() => {
@@ -153,13 +160,21 @@ const ChatBot = () => {
 
       {/* 입력창 (채팅 시작 후에도 계속 표시됨) */}
       <div className={`input-container ${isChatStarted ? 'chat-started' : ''}`}>
+
+        <button 
+          className={`microphone-button ${isRecording ? 'recording' : ''}`} 
+          onClick={localHandleMicrophoneClick}
+        ></button>
+
         <input
           type="text"
           placeholder="메시지를 입력하세요..."
           value={currentMessage}
           onChange={(e) => setCurrentMessage(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && handleSendFromInput()} // Enter 키 입력 시 메시지 전송
+
         />
-        <button onClick={handleSendFromInput}>전송</button>
+        <button className="send-button" onClick={handleSendFromInput}>전송</button>
       </div>
       {!isChatStarted && (
         <div className="example-questions">

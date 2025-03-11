@@ -5,7 +5,7 @@ from uuid import uuid4
 from app.services.openai_service import request_gpt
 from datetime import datetime
 from app.core.db import get_db
-from app.models.user import chat_session, chat_message
+from app.models.user import chat_session, chat_message, UserData
 from sqlalchemy.orm import Session
 from app.services.generate_id import generate_unique_message_id
 
@@ -104,11 +104,52 @@ async def list_sessions(user_id: str = Query(..., description="User ID"), db: Se
     # sessions는 예: [('session1', 'Hello World'), ('session2', 'Hi there'), ...] 형태이므로 딕셔너리로 변환합니다.
     return [{"sessionId": s[0], "header_message": s[1]} for s in sessions]
 
-# 챗봇 엔드포인트 (예: POST /chat)
+# 챗봇 엔드포인트 
 @router.post("/model", response_model=ChatResponse)
-async def chat_endpoint(chat: ChatRequest):
-
-    gpt_response = request_gpt(chat.message)
-    print(gpt_response)
-
+async def chat_endpoint(chat: ChatRequest, db: Session = Depends(get_db)):
+    # 세션 ID가 제공된 경우 이전 대화 컨텍스트 불러오기
+    conversation_context = ""
+    
+    if chat.session_id:
+        # 최근 N개의 메시지만 불러오기 (토큰 제한 고려)
+        recent_messages = (
+            db.query(chat_message)
+            .filter(chat_message.session_id == chat.session_id)
+            .order_by(chat_message.timestamp.desc())
+            .limit(10)  # 최근 10개 메시지만 사용
+            .all()
+        )
+        
+        # 시간 순서대로 정렬
+        recent_messages.reverse()
+        
+        # 컨텍스트 구성
+        for msg in recent_messages:
+            role = "user111" if msg.sender == "user" else "assistant222"
+            conversation_context += f"{role}::: {msg.message}\n"
+        
+        # 선택적: 사용자 정보 추가
+        session_obj = db.query(chat_session).filter(chat_session.session_id == chat.session_id).first()
+        if session_obj:
+            user_obj = db.query(UserData).filter(UserData.user_id == session_obj.user_id).first()
+            if user_obj:
+                # 필요한 사용자 정보만 포함
+                user_context = f"사용자 정보: 성별={user_obj.gender}, 지역={user_obj.area}, 특성={user_obj.personalCharacteristics}\n\n"
+                conversation_context = user_context + conversation_context
+    
+    # 대화 컨텍스트를 포함하여 GPT에 요청
+    gpt_response = request_gpt(
+        message=chat.message,
+        conversation_history=conversation_context
+    )
+    
     return ChatResponse(response=gpt_response)
+
+
+# init_message = None
+# @router.get("/model/first", out_message=InitMessage)
+# async def first_message(InitMessage: InitMessage):
+#     if InitMessage.init_message:
+#         init_message = InitMessage.init_message    
+#     elif InitMessage.init_message == None:
+#         return init_message

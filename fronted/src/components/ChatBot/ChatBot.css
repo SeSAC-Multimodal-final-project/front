@@ -103,7 +103,7 @@
   /* 텍스트 입력 필드 */
   .input-container input {
     flex: 1;
-    padding: 10px;
+    padding: 10px 10px 10px 50px; /* 상, 우, 하, 좌 순서 */
     font-size: 1rem;
     border: 1px solid #e9717100;
     border-radius: 15px;
@@ -111,12 +111,13 @@
     transition: border-color 0.3s ease;
     background-color: #f4f4f4; 
   }
+
   .input-container input:focus {
     border-color: #4ca6f7;
   }
   
   /* 전송 버튼(아이콘) */
-  .input-container button {
+  .input-container .send-button {
     position: absolute;
     right: 10px;
     top: 50%;
@@ -135,6 +136,58 @@
     transition: background-color 0.2s ease;
   }
   
+  .input-container .microphone-button {
+    position: absolute;
+    left: 25px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px; /* 버튼 크기 조정 */
+    height: 24px;
+    background-image: url('../../../public/mic.png'); /* 배경 이미지 설정 */
+    background-size: 20px 29px; /* 이미지 크기 조정 */
+    background-repeat: no-repeat; /* 이미지 반복 방지 */
+    background-position: center; /* 이미지 중앙 정렬 */
+    color: transparent;
+    border: none; /* 버튼 테두리 제거 */
+    cursor: pointer; /* 커서 모양 변경 */
+  }
+
+  /* 마이크 버튼의 녹음 중 상태 스타일 */
+  .input-container .microphone-button.recording {
+    background-color: #ff4c4c; /* 녹음 중일 때 빨간색 배경 */
+    border-radius: 30%; /* 원형으로 만들기 */
+    box-shadow: 0 0 0 rgba(255, 76, 76, 0.4); /* 초기 그림자 없음 */
+    animation: pulse 1.5s infinite; /* 맥동 애니메이션 적용 */
+  }
+
+/* 맥동 효과를 위한 애니메이션 */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 76, 76, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 76, 76, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 76, 76, 0);
+  }
+}
+
+
+  .input-container .send-button:hover {
+    background-color: #e6e6e65d;
+  }
+
+  .input-container .microphone-button:hover {
+    background-color: #e6e6e6;
+  }
+
+/* recording 클래스가 적용된 마이크 버튼에는 호버 효과 제거 */
+.input-container .microphone-button.recording:hover {
+  background-color: #ff4c4c; /* 녹음 중 배경색 유지 */
+}
+
+
   /* 안내 문구(채팅 시작 전) */
   .intro-text {
     position: absolute;

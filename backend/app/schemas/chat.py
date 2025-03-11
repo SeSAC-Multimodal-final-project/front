@@ -23,9 +23,12 @@ class ChatSessionCreate(BaseModel):
 
 class ChatRequest(BaseModel):
     message: str
+    session_id: str | None = None  # 선택적 세션 ID 추가
+
 
 class ChatResponse(BaseModel):
     response: str
 
-class InitMessage(BaseModel):
-    init_message: str | None = None
+
+# class InitMessage(BaseModel):
+#     init_message: str | None = None

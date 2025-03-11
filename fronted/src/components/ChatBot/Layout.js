@@ -21,9 +21,10 @@ export default function Layout () {
     <div className="layout-container">
       {/* 사이드바에 collapsed 클래스를 추가/제거하기 */}
       <div className={`sidebar ${isSidebarOpen ? '' : 'collapsed'}`}>
-        <button className="sidebar-toggle" onClick={toggleSidebar}>
-          {isSidebarOpen ? '◀' : '▶'}
-        </button>
+      <button
+        className={`sidebar-toggle ${isSidebarOpen ? 'open' : 'closed'}`}
+        onClick={toggleSidebar}
+      ></button>
         {isSidebarOpen && (
           <>
             <div className="sidebar-logo"></div>
@@ -32,6 +33,13 @@ export default function Layout () {
             </button>
             <ChatSessionList />
           </>
+        )}
+        {!isSidebarOpen && (
+          <div className="sidebar-collapsed-content">
+            <button className="new-chat-button-mini" onClick={startNewChat}>
+              +
+            </button>
+          </div>
         )}
       </div>
       <div className="main-content">

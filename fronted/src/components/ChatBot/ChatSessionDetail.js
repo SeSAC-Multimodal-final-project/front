@@ -2,25 +2,30 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import './ChatBot.css';
+import { handleMicrophoneClick } from '../utils/microphoneHandler';
+import { setMessage } from '../redux/messageSlice';
+
 
 const ChatSessionDetail = () => {
   const { sessionId } = useParams(); // URL에서 sessionId를 추출합니다.
   const [chatHistory, setChatHistory] = useState([]);
   const [currentMessage, setCurrentMessage] = useState('');
   const messagesEndRef = useRef(null);
-
+  const [isRecording, setIsRecording] = useState(false);
+  const dispatch = useDispatch();
   const message = useSelector(state => state.message);
 
   // 백엔드에서 해당 세션의 채팅 기록을 불러옵니다.
   useEffect(() => {
+    console.log("useEffect");
     fetch(`http://localhost:8000/sessions/${sessionId}`)
       .then((res) => res.json())
       .then((data) => {
         if (data.messages && data.messages.length > 0) {
           // 타임스탬프와 sender에 따라 메시지를 정렬합니다.
-          console.log("메시지 기록 없음");
+          console.log("메시지 기록 있음");
           const sortedMessages = data.messages.sort((a, b) => {
             return a.timestamp.localeCompare(b.timestamp) || (a.sender === 'user' ? -1 : 1);
           });
@@ -32,6 +37,7 @@ const ChatSessionDetail = () => {
             // 메시지를 처리하는 로직
             console.log("처리할 메시지:", message);
             sendMessage(message);
+            dispatch(setMessage('')); // Redux 메시지 초기화
           }
           else {
             console.log("처리할 메시지 없음");
@@ -39,7 +45,7 @@ const ChatSessionDetail = () => {
         } 
       })
       .catch((err) => console.error(err));
-  }, [sessionId]);
+  }, [sessionId, message, dispatch]);
 
 
   // 메시지 전송 함수: 백엔드의 /chat 엔드포인트를 호출해 챗봇 응답을 받고,
@@ -49,7 +55,10 @@ const ChatSessionDetail = () => {
       const response = await fetch('http://localhost:8000/model', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message }),
+        body: JSON.stringify({
+           message,
+           session_id: sessionId 
+          }),
       });
       const data = await response.json();
       const timestamp = new Date().toISOString();
@@ -85,6 +94,11 @@ const ChatSessionDetail = () => {
     setCurrentMessage('');
   };
 
+  const localHandleMicrophoneClick = () => {
+    setIsRecording(prev => !prev);
+    handleMicrophoneClick(setCurrentMessage, setIsRecording);
+  };
+
   // 새로운 메시지가 추가되면 스크롤을 자동으로 맨 아래로 이동
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -103,14 +117,26 @@ const ChatSessionDetail = () => {
         ))}
         <div ref={messagesEndRef} />
       </div>
-      <div className={`input-container ${'chat-started'}`}>
+      <div className={`input-container ${'chat-started'} ${isRecording ? 'recording' : ''}`}>
         <input
           type="text"
           placeholder="메시지를 입력하세요..."
           value={currentMessage}
           onChange={(e) => setCurrentMessage(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
+              e.preventDefault(); // 기본 동작(예: 폼 제출) 방지
+              if (!e.repeat) {    // 키 이벤트가 반복되지 않은 경우에만 처리
+                handleSend();
+              }
+            }
+          }}
         />
-        <button onClick={handleSend}>전송</button>
+        <button className="send-button" onClick={handleSend}>전송</button>
+        <button 
+          className={`microphone-button ${isRecording ? 'recording' : ''}`} 
+          onClick={localHandleMicrophoneClick}
+        ></button>      
       </div>
     </div>
   );
