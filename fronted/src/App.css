@@ -291,3 +291,16 @@
   width: 100px;
   height: 140px;
 }
+
+.header-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background-color: #ffffff; /* 흰색 배경 추가 */
+  transition: transform 0.3s ease;
+}
+
+.header-visible { transform: translateY(0); }
+.header-hidden { transform: translateY(-100%); }

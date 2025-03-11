@@ -11,4 +11,4 @@ def whisper_stt(audio_file):
         model="whisper-1", 
         file=audio_file
     )
-    return transcription.text   
+    return transcription.text
