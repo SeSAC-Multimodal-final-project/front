@@ -171,8 +171,14 @@ const ChatBot = () => {
           placeholder="메시지를 입력하세요..."
           value={currentMessage}
           onChange={(e) => setCurrentMessage(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && handleSendFromInput()} // Enter 키 입력 시 메시지 전송
-
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
+              e.preventDefault(); // 기본 동작(예: 폼 제출) 방지
+              if (!e.repeat) {    // 키 이벤트가 반복되지 않은 경우에만 처리
+                handleSendFromInput();
+              }
+            }
+          }}
         />
         <button className="send-button" onClick={handleSendFromInput}>전송</button>
       </div>
