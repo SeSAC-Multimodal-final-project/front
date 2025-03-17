@@ -9,7 +9,7 @@ from app.models.user import Base # Base에 모든 ORM 모델이 등록되어 있
 Base.metadata.create_all(engine)
 
 # 라우터 임포트
-from app.api import auth, chat, stt 
+from app.api import auth, chat, stt
 
 app = FastAPI()
 

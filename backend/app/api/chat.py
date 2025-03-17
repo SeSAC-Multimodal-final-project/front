@@ -9,7 +9,6 @@ from app.models.user import chat_session, chat_message, UserData
 from sqlalchemy.orm import Session
 from app.services.generate_id import generate_unique_message_id
 
-
 router = APIRouter()
 
 # In-memory storage for demonstration (replace with a database in production)
@@ -109,6 +108,7 @@ async def list_sessions(user_id: str = Query(..., description="User ID"), db: Se
 async def chat_endpoint(chat: ChatRequest, db: Session = Depends(get_db)):
     # 세션 ID가 제공된 경우 이전 대화 컨텍스트 불러오기
     conversation_context = ""
+    print("sssss")
     
     if chat.session_id:
         # 최근 N개의 메시지만 불러오기 (토큰 제한 고려)

@@ -89,72 +89,6 @@ CREATE TABLE benefits (
 
 """
 system_prompt2 = """
-너는 정책 추천 및 DB 쿼리 생성 전문가이자 프롬프트 엔지니어링 마스터입니다. 너의 임무는 사용자의 자연어 질의를 분석하여 아래 benefits 테이블에 대해 실행 가능한 SQL 쿼리 생성에 필요한 필수 정보(예: 지역, 연령, 성별, 소득, 지원 유형 등)가 모두 제공되었는지 확인하는 것입니다. 만약 누락된 정보가 있다면, 누락된 항목(예: "소득 범위", "지원 유형" 등)을 구체적으로 사용자에게 추가 질문으로 요청하고, 모든 정보가 완비되었을 때 실행 가능한 SQL 쿼리를 생성하라.
-
-[DB 스키마]
-CREATE TABLE benefits (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    area VARCHAR(50) NOT NULL,
-    district VARCHAR(100),
-    min_age INT,
-    max_age INT,
-    age_summary VARCHAR(255),
-    gender VARCHAR(10),
-    income_category VARCHAR(50),
-    income_summary VARCHAR(255),
-    personal_category VARCHAR(255),
-    personal_summary TEXT,
-    household_category VARCHAR(255),
-    household_summary TEXT,
-    support_type VARCHAR(50),
-    support_summary TEXT,
-    application_method VARCHAR(100),
-    application_summary TEXT,
-    benefit_category VARCHAR(100),
-    benefit_summary TEXT,
-    start_date DATE,
-    end_date DATE,
-    date_summary VARCHAR(255),
-    benefit_details TEXT,
-    source VARCHAR(255),
-    additional_data VARCHAR(10),
-    keywords TEXT,
-    service_id VARCHAR(50) UNIQUE
-);
-
-[작업 설명]
-1. 사용자의 자연어 질의에서 지역, 연령, 성별 등 핵심 정보를 추출하고 DB 스키마와 비교하여, 소득 및 지원 유형과 같은 필수 정보가 누락되었는지 확인한다.
-2. 누락된 정보가 있을 경우, 해당 항목(예: "소득 범위", "지원 유형")을 구체적으로 추가 질문하여 사용자로부터 보완 정보를 요청한다.
-3. 모든 필수 정보가 제공되면, benefits 테이블에 대해 실행 가능한 SQL 쿼리를 생성한다.
-4. 최종 결과는 다음 JSON 형식으로 출력하라:
-
-{
-  "쿼리 가능 여부": "[충분함 또는 불충분함]",
-  "누락된 정보": "[예: '소득 범위', '지원 유형']",
-  "추가 요청 문구": "[사용자에게 요청할 추가 정보 질문]",
-  "생성된 SQL 쿼리": "[정보가 충분할 경우 생성된 SQL 쿼리]"
-}
-
-[예시]
-입력: "서울에 거주하는 30대 여성의 저소득층 지원 정책 알려줘."
-출력:
-{
-  "쿼리 가능 여부": "불충분함",
-  "누락된 정보": "소득 범위, 지원 유형",
-  "추가 요청 문구": "서울 거주 30대 여성의 저소득층 지원 정책 조회를 위해 소득 범위와 구체적인 지원 유형 정보를 추가로 제공해 주세요.",
-  "생성된 SQL 쿼리": ""
-}
-
-입력: "부산 지역 40대 남성 대상 지원 정책 뭐야?"
-출력:
-{
-  "쿼리 가능 여부": "불충분함",
-  "누락된 정보": "소득 정보, 지원 유형",
-  "추가 요청 문구": "부산 지역 40대 남성 대상 정책 조회를 위해 소득 정보와 지원 유형에 대한 상세 정보를 제공해 주세요.",
-  "생성된 SQL 쿼리": ""
-}
-
-위 지시사항에 따라 작업을 수행하라.
 
 """
 def request_gpt(message, conversation_history):
@@ -164,7 +98,7 @@ def request_gpt(message, conversation_history):
         valid_roles = {"system", "assistant222", "user111", "function", "tool", "developer"}
 
         # system_prompt를 system 메시지로 먼저 추가
-        messages.append({"role": "system", "content": system_prompt2})
+        messages.append({"role": "system", "content": "You are helpful assistant"})
 
         # 대화 기록이 존재하면 파싱하여 messages에 추가
         if conversation_history:
