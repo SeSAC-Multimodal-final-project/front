@@ -10,7 +10,7 @@ class UserDataRequest(BaseModel):
     phone: str
     area: str
     district: str
-    birthDate: date
+    birthDate: str
     gender: str
     incomeRange: str
     personalCharacteristics: List[str] = Field(default_factory=list)
